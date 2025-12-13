@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #8656ec;
+  --color-secondary: #e144de;
+  --color-tertiary: #2c68fa;
+
+  --color-background: #000000;
+  --color-white: #ffffff;
+  --color-accent: rgba(255, 255, 255, 0.8);
+
+  --font-sans: 'Open Sauce Sans', sans-serif;
+}
+
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('../assets/fonts/OpenSauceSans-Bold.woff2') format('woff2'),
+    url('../assets/fonts/OpenSauceSans-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('../assets/fonts/OpenSauceSans-LightItalic.woff2') format('woff2'),
+    url('../assets/fonts/OpenSauceSans-LightItalic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('../assets/fonts/OpenSauceSans-Light.woff2') format('woff2'),
+    url('../assets/fonts/OpenSauceSans-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('../assets/fonts/OpenSauceSans-Regular.woff2') format('woff2'),
+    url('../assets/fonts/OpenSauceSans-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+}
