@@ -12,6 +12,35 @@
   --font-sans: 'Open Sauce Sans', sans-serif;
 }
 
+@utility glass-effect {
+  /* Layout y Posicionamiento (Agregué 'relative' para contener los efectos) */
+  @apply relative inline-flex items-center justify-center align-middle;
+
+  /* Comportamiento e Interacción */
+  @apply cursor-pointer select-none pointer-events-auto;
+
+  /* Fondo y Efectos Visuales */
+  @apply border border-white/50 bg-white/2.5 backdrop-blur-sm;
+  @apply shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)];
+
+  /* Transiciones */
+  @apply transition-all duration-300 hover:bg-white/10;
+
+  /* Pseudo-elemento BEFORE (Brillo superior izquierdo) */
+  @apply before:absolute before:inset-0 overflow-hidden;
+  @apply before:bg-linear-to-br before:from-white/60 before:via-transparent before:to-transparent;
+  @apply before:opacity-70 before:pointer-events-none;
+
+  /* Pseudo-elemento AFTER (Brillo inferior derecho) */
+  @apply after:absolute after:inset-0;
+  @apply after:bg-linear-to-tl after:from-white/50 after:via-transparent after:to-transparent;
+  @apply after:opacity-50 after:pointer-events-none;
+}
+
+@utility border-glass {
+  @apply w-full max-w-lg bg-conic/[from_0deg] from-gray-500/65 to-gray-500/40 rounded-2xl p-[1px];
+}
+
 @font-face {
   font-family: 'Open Sauce Sans';
   src: url('../assets/fonts/OpenSauceSans-Bold.woff2') format('woff2'),

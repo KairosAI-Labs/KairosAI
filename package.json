@@ -14,8 +14,12 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.16.5",
+    "astro-icon": "^1.1.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18"
   }
 }

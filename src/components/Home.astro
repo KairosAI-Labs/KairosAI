@@ -1,7 +1,40 @@
 ---
+import CardGlass from './CardGlass.astro';
 import Hero from './Hero.astro';
 ---
 
+<Hero />
+
 <main>
-  <Hero />
+  <!-- Sección de propuesta de valor -->
+  <section class="relative p-10 flex flex-col gap-4 max-w-[800px]">
+    <h1 class="font-semibold text-2xl">
+      Deja de perder oportunidades hoy, y transforma tu mañana.
+    </h1>
+    <p class="text-sm">
+      Existe un abismo técnico entre probar la IA (70%) y dominarla (15%). En
+      Kairos AI cubrimos esa brecha técnica, diseñando los Agentes
+      Personalizados que te permiten operar hoy con la tecnología del futuro.
+    </p>
+    <div class="flex gap-4 flex-wrap">
+      <div
+        class="absolute -top-2 bg-[url('/src/assets/background/ellipse-linear-bluepink.svg')] bg-no-repeat bg-center w-full h-full"
+      >
+      </div>
+      <CardGlass
+        title="15%"
+        description="Las empresas con visión de futuro destinan sus gastos a agentes IA.Las empresas con visión de futuro destinan sus gastos a agentes IA."
+      />
+      <CardGlass
+        title="15%"
+        description="Las empresas con visión de futuro destinan sus gastos a agentes IA.Las empresas con visión de futuro destinan sus gastos a agentes IA."
+      />
+    </div>
+    <p class="text-sm">
+      Boston Consulting Group (BCG) Reporte Oficial: “The Widening AI & Digital
+      Value Gap: Build for the Future 2025”.
+    </p>
+  </section>
+
+  <section class="flex gap-4"></section>
 </main>
