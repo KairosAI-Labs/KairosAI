@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import pulpoGradiente from '@assets/branding/pulpo-grandient.webp';
-import ButtonGlass from './ui/ButtonGlass.astro';
+import { ButtonGlass } from './ui/ButtonGlass';
 import { Icon } from 'astro-icon/components';
 ---
 
@@ -24,13 +24,17 @@ import { Icon } from 'astro-icon/components';
       de software que optimizan tus recursos cuando más importa.
     </p>
     <!-- glass btn -->
-    <ButtonGlass variant="textIcon">
+    <ButtonGlass
+      client:visible
+      onClick={() => alert('hola')}
+      variant="textIcon"
+    >
       Agendar Cita
-      <Icon width={20} height={20} name="calendar" slot="icon" />
+      <i><Icon width={20} height={20} name="calendar" slot="icon" /></i>
     </ButtonGlass>
     <ButtonGlass size="sm"> Todas </ButtonGlass>
     <ButtonGlass variant="icon">
-      <Icon width={20} height={20} name="calendar" slot="icon" />
+      <i><Icon width={20} height={20} name="calendar" slot="icon" /></i>
     </ButtonGlass>
   </div>
 </section>
