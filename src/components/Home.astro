@@ -6,35 +6,59 @@ import { FAQForm } from './FAQForm';
 
 <Hero />
 
-<main class="py-20">
+<main class="py-20 px-6 max-w-7xl mx-auto">
   <!-- Sección de propuesta de valor -->
-  <section class="relative p-10 flex flex-col gap-4 max-w-[800px]">
-    <h1 class="font-semibold text-2xl">
-      Deja de perder oportunidades hoy, y transforma tu mañana.
-    </h1>
-    <p class="text-sm">
-      Existe un abismo técnico entre probar la IA (70%) y dominarla (15%). En
-      Kairos AI cubrimos esa brecha técnica, diseñando los Agentes
-      Personalizados que te permiten operar hoy con la tecnología del futuro.
-    </p>
-    <div class="flex gap-4 flex-wrap">
-      <div
-        class="absolute -top-2 bg-[url('/src/assets/background/ellipse-linear-bluepink.svg')] bg-no-repeat bg-center w-full h-full"
-      >
+ 
+  <section class="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-30 pointer-events-none">
+       <div class="bg-[url('/src/assets/background/ellipse-linear-bluepink.svg')] bg-no-repeat bg-center w-[600px] h-[600px] blur-3xl"></div>
+    </div>
+
+    <div class="flex flex-col gap-8 order-2 lg:order-1">
+      <h1 class="font-semibold text-2xl">
+        Deja de perder oportunidades hoy, y transforma tu mañana.
+      </h1>
+
+      <div class="lg:hidden flex justify-center">
+        <img 
+          src="src/assets/mask/mask-tech.webp"
+          alt="Tecnología de Kairos AI" 
+          class="w-full max-w-[400px] drop-shadow-[0_0_50px_rgba(59,130,246,0.3)]"
+        />
       </div>
-      <CardGlass
+
+      <p class="text-sm">
+        Existe un abismo técnico entre probar la IA (70%) y dominarla (15%). En
+        Kairos AI cubrimos esa brecha técnica, diseñando los Agentes
+        Personalizados que te permiten operar hoy con la tecnología del futuro.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <CardGlass
         title="15%"
         description="Las empresas con visión de futuro destinan sus gastos a agentes IA.Las empresas con visión de futuro destinan sus gastos a agentes IA."
       />
       <CardGlass
-        title="15%"
-        description="Las empresas con visión de futuro destinan sus gastos a agentes IA.Las empresas con visión de futuro destinan sus gastos a agentes IA."
+        title="70%"
+        description="Las funciones se concentran en soluciones empresariales."
+      />
+      </div>
+
+      <p class="text-sm">
+        Boston Consulting Group (BCG) Reporte Oficial: “The Widening AI & Digital
+        Value Gap: Build for the Future 2025”.
+      </p>
+    </div>
+
+    <div class="hidden lg:flex justify-end order-1 lg:order-2">
+      <img 
+        src="src/assets/mask/mask-tech.webp"
+        alt="Tecnología de Kairos AI" 
+        class="w-full max-w-[350px] h-auto object-contain drop-shadow-[0_0_80px_rgba(59,130,246,0.2)]"
       />
     </div>
-    <p class="text-sm">
-      Boston Consulting Group (BCG) Reporte Oficial: “The Widening AI & Digital
-      Value Gap: Build for the Future 2025”.
-    </p>
+
   </section>
 
   <section class="flex gap-4"></section>
