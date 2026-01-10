@@ -5,6 +5,7 @@ import { IconSearch } from '@tabler/icons-react';
 import { FAQ, FAQ_TYPES, MENU_FAQ_TYPES} from '../constants/FAQ';
 import { cleanText } from '../lib/utils';
 import clsx from 'clsx';
+import { AccordionList } from './AccordionList';
 
 type TOGGLE_FAQ_TYPE = FAQ_TYPES | "ALL"
 
@@ -64,6 +65,7 @@ export const FAQForm = () => {
         }
 
       </div>
+
       <form role="search">
         <div
           className="flex items-center gap-5 ring-1 ring-gray-500/50 rounded-[20px] py-2 px-4 w-[500px]"
@@ -80,14 +82,7 @@ export const FAQForm = () => {
         </div>
       </form>
 
-       <ul className='flex flex-col gap-4 mt-5'>
-          {filteredFaq.map(itemfaq => (
-            <li key={itemfaq.question}>
-              {itemfaq.question}
-            </li>
-          ))}
-       </ul>
+      <AccordionList FAQData={filteredFaq} />
     </section>
-
   )
 }
