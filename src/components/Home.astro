@@ -1,7 +1,9 @@
 ---
 import CardGlass from './CardGlass.astro';
+import ServiceCard from '../components/ServiceCard.astro';
 import Hero from './Hero.astro';
 import { FAQForm } from './FAQForm';
+import { ServicesCarousel } from '../components/ServicesCarousel';
 ---
 
 <Hero />
@@ -65,6 +67,48 @@ import { FAQForm } from './FAQForm';
   </section>
 
   <section class="flex gap-4"></section>
+
+<section class="py-20 overflow-hidden">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-12">
+      <div class="max-w-xl">
+        <h2 class="text-4xl font-bold text-white mb-4">Servicios que ofrecemos.</h2>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          Completamos tus necesidades de presencia digital desde Diseño UI/UX, 
+          Desarrollo de Sitios Web o Apps, Aplicaciones Móviles con.
+        </p>
+      </div>
+    </div>
+
+    <ServicesCarousel client:visible>
+      <ServiceCard 
+        title="Páginas Web"
+        description="Un sitio web permite que tu visibilidad en internet crezca."
+        image="/src/assets/general/laptop.png"
+        gradientClass="bg-gradient-to-b from-[#0C0C0C] to-[#4D4D4D] border border-white/10"
+      />
+      
+      <ServiceCard 
+        title="Desarrollo Móvil"
+        description="Creamos aplicaciones que se adaptan a tus necesidades."
+        image="/src/assets/general/Phone.png"
+        gradientClass="bg-gradient-to-br from-[#4C24A1] via-[#9135D2] to-[#35144C]"
+      />
+
+      <ServiceCard 
+        title="Automatizaciones"
+        description="Te ayudamos a crear un diseño adaptado a tu estilo."
+        image="/src/assets/general/Gear.png"
+        gradientClass="bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#172554]"
+      />
+
+      <ServiceCard 
+        title="Diseño UI/UX"
+        description="Creamos flujos de trabajo que optimizan tu tiempo."
+        image="/src/assets/general/Gear.png"
+        gradientClass="bg-gradient-to-br from-[#9E2BA8] via-[#DE40EB] to-[#571B5C]"
+      />
+    </ServicesCarousel>
+  </section>
 
   <section class="flex items-center justify-center flex-col gap-8">
     <div class="max-w-[400px] flex items-center flex-col text-center gap-6">
