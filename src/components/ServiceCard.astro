@@ -9,19 +9,13 @@ interface Props {
 const { title, description, image, gradientClass } = Astro.props;
 ---
 
-<article class={`flex-shrink-0 w-[85%] md:w-[380px] rounded-[40px] p-8 flex flex-col justify-between min-h-[480px] snap-center ${gradientClass}`}>
+<article
+  class={`shrink-0 w-[85%] md:w-96 rounded-[40px] p-8 flex flex-col justify-between  relative overflow-hidden ${gradientClass}`}
+>
   <div class="space-y-4">
-    <h3 class="text-3xl font-medium text-white leading-tight">{title}</h3>
-    <p class="text-white/80 text-sm leading-relaxed max-w-[400px]">
+    <h3 class="text-3xl font-bold text-white">{title}</h3>
+    <p class="text-white/80 text-sm leading-relaxed max-w-96">
       {description}
     </p>
-  </div>
-  
-  <div class="mt-auto flex justify-center items-end h-56">
-    <img 
-      src={image} 
-      alt={title} 
-      class="max-h-full w-auto object-contain drop-shadow-2xl"
-    />
   </div>
 </article>

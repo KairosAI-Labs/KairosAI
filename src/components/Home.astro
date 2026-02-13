@@ -24,7 +24,7 @@ import IntegrationIcon from '../components/IntegrationIcon.astro';
 
     <div class="flex flex-col gap-8 order-2 lg:order-1">
       <h1 class="font-semibold text-2xl">
-        Deja de perder oportunidades hoy, y transforma tu mañana.
+        Deja de perder oportunidades hoy, y transforma tu mañana
       </h1>
 
       <div class="lg:hidden flex justify-center">
@@ -36,19 +36,19 @@ import IntegrationIcon from '../components/IntegrationIcon.astro';
       </div>
 
       <p class="text-sm">
-        Existe un abismo técnico entre probar la IA (70%) y dominarla (15%). En
-        Kairos AI cubrimos esa brecha técnica, diseñando los Agentes
-        Personalizados que te permiten operar hoy con la tecnología del futuro.
+        Actualmente, el mercado se divide en dos grupos muy desiguales según el
+        reporte de Boston Consulting Group (2025). Tu empresa no tiene por qué
+        quedarse atrapada en la brecha.
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col md:flex-row gap-6">
         <CardGlass
           title="15%"
-          description="Las empresas con visión de futuro destinan sus gastos a agentes IA.Las empresas con visión de futuro destinan sus gastos a agentes IA."
+          description="Lograron cruzar el abismo técnico. Estas son las empresas que ya dominan la tecnología, integrando Agentes de IA en el núcleo de sus operaciones."
         />
         <CardGlass
           title="70%"
-          description="Las funciones se concentran en soluciones empresariales."
+          description="Las empresas están en la fase de 'prueba'. Utilizan funciones aisladas de IA, pero no logran transformar sus procesos ni ver un retorno de inversión real."
         />
       </div>
 
@@ -69,40 +69,42 @@ import IntegrationIcon from '../components/IntegrationIcon.astro';
 
   <section class="flex gap-4"></section>
 
-<section class="py-20 overflow-hidden">
-    <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-8 mb-12">
+  <section class="overflow-hidden">
+    <div class="mb-12 grid place-content-center">
       <div class="max-w-xl">
-        <h2 class="text-4xl font-bold text-white mb-4">Servicios que ofrecemos.</h2>
-        <p class="text-gray-400 text-sm leading-relaxed">
-          Completamos tus necesidades de presencia digital desde Diseño UI/UX, 
+        <h2 class="text-4xl font-bold text-white mb-4 text-center">
+          Servicios que ofrecemos
+        </h2>
+        <p class="text-gray-400 text-sm leading-relaxed text-center">
+          Completamos tus necesidades de presencia digital desde Diseño UI/UX,
           Desarrollo de Sitios Web o Apps, Aplicaciones Móviles con.
         </p>
       </div>
     </div>
 
     <ServicesCarousel client:visible>
-      <ServiceCard 
+      <ServiceCard
         title="Páginas Web"
         description="Un sitio web permite que tu visibilidad en internet crezca."
         image="/src/assets/general/laptop.png"
         gradientClass="bg-gradient-to-b from-[#0C0C0C] to-[#4D4D4D] border border-white/10"
       />
-      
-      <ServiceCard 
+
+      <ServiceCard
         title="Desarrollo Móvil"
         description="Creamos aplicaciones que se adaptan a tus necesidades."
         image="/src/assets/general/Phone.png"
         gradientClass="bg-gradient-to-br from-[#4C24A1] via-[#9135D2] to-[#35144C]"
       />
 
-      <ServiceCard 
+      <ServiceCard
         title="Automatizaciones"
         description="Te ayudamos a crear un diseño adaptado a tu estilo."
         image="/src/assets/general/Gear.png"
         gradientClass="bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#172554]"
       />
 
-      <ServiceCard 
+      <ServiceCard
         title="Diseño UI/UX"
         description="Creamos flujos de trabajo que optimizan tu tiempo."
         image="/src/assets/general/Gear.png"
@@ -111,45 +113,55 @@ import IntegrationIcon from '../components/IntegrationIcon.astro';
     </ServicesCarousel>
   </section>
 
- <section class="py-24 flex flex-col items-center bg-black overflow-hidden px-6">
-  <h2 class="text-white text-2xl md:text-3xl font-medium mb-16 text-center">
-    Integraciones Inteligentes
-  </h2>
+  <section class="flex flex-col items-center bg-black overflow-hidden px-6">
+    <h2 class="text-white text-2xl md:text-3xl font-medium mb-16 text-center">
+      Integraciones Inteligentes
+    </h2>
 
-  <div class="relative w-full max-w-[650px] flex flex-col items-center gap-6 md:gap-10">
-    
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <img src="src/assets/background/ellipse-linear-bluepink.svg" class="absolute w-[120%] h-[120%] opacity-90 blur-3xl" alt="" />
-      
-      <img src="src/assets/background/Frame 22.webp" class="absolute w-full h-full object-contain opacity-20" alt="" />
-    </div>
+    <div
+      class="relative w-full max-w-[650px] flex flex-col items-center gap-6 md:gap-10"
+    >
+      <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <img
+          src="src/assets/background/ellipse-linear-bluepink.svg"
+          class="absolute w-[120%] h-[120%] opacity-90 blur-3xl"
+          alt=""
+        />
 
-    <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
-      <IntegrationIcon src="src/assets/logos/strapi.svg" alt="Strapi" />
-      <IntegrationIcon src="src/assets/logos/meta-3.svg" alt="Meta" />
-    </div>
-
-    <div class="relative z-10 w-full flex justify-between items-center">
-      <IntegrationIcon src="src/assets/logos/chatwoot.svg" alt="Chatwoot" />
-      
-      <div class="w-24 h-24 md:w-32 md:h-32">
-        <img 
-          src="src/assets/branding/pulpo-grandient.webp" 
-          alt="Kairos AI" 
-          class="w-full h-full object-contain animate-pulse"
+        <img
+          src="src/assets/background/Frame 22.webp"
+          class="absolute w-full h-full object-contain opacity-20"
+          alt=""
         />
       </div>
 
-      <IntegrationIcon src="src/assets/logos/gmail.svg" alt="Gmail" />
-    </div>
+      <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
+        <IntegrationIcon src="src/assets/logos/strapi.svg" alt="Strapi" />
+        <IntegrationIcon src="src/assets/logos/meta-3.svg" alt="Meta" />
+      </div>
 
-    <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
-      <IntegrationIcon src="src/assets/logos/supabase.svg" alt="Supabase" />
-      <IntegrationIcon src="src/assets/logos/google-meet.svg" alt="Meet" />
-    </div>
+      <div class="relative z-10 w-full flex justify-between items-center">
+        <IntegrationIcon src="src/assets/logos/chatwoot.svg" alt="Chatwoot" />
 
-  </div>
-</section>
+        <div class="w-24 h-24 md:w-32 md:h-32">
+          <img
+            src="src/assets/branding/pulpo-grandient.webp"
+            alt="Kairos AI"
+            class="w-full h-full object-contain animate-pulse"
+          />
+        </div>
+
+        <IntegrationIcon src="src/assets/logos/gmail.svg" alt="Gmail" />
+      </div>
+
+      <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
+        <IntegrationIcon src="src/assets/logos/supabase.svg" alt="Supabase" />
+        <IntegrationIcon src="src/assets/logos/google-meet.svg" alt="Meet" />
+      </div>
+    </div>
+  </section>
 
   <section class="flex items-center justify-center flex-col gap-8">
     <div class="max-w-[400px] flex items-center flex-col text-center gap-6">

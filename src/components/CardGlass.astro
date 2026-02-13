@@ -12,15 +12,17 @@ const { title, description, class: className } = Astro.props;
 
 <article
   class={cn(
-    'w-full min-h-[180px] rounded-3xl p-[1px] bg-gradient-to-b from-white/20 to-transparent', 
-    className
+    'w-full min-h-44 min-w-80 rounded-3xl p-[1px] bg-gradient-to-b from-white/20 to-transparent',
+    className,
   )}
 >
-  <div class="flex flex-col justify-center gap-3 bg-[#0a0a0a]/90 backdrop-blur-xl rounded-[23px] py-8 px-6 h-full text-center">
+  <div
+    class="flex flex-col justify-center gap-3 bg-[#0a0a0a]/90 backdrop-blur-xl rounded-[23px] py-8 px-6 h-full text-center"
+  >
     <h3 class="font-bold text-4xl">
       {title}
     </h3>
-    <p class="font-extralight line-clamp-4">
+    <p class="font-extralight line-clamp-6 text-sm">
       {description}
     </p>
   </div>
