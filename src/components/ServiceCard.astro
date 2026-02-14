@@ -2,15 +2,14 @@
 interface Props {
   title: string;
   description: string;
-  image: string;
-  gradientClass: string;
+  gradiesntClass: string;
 }
 
-const { title, description, image, gradientClass } = Astro.props;
+const { title, description, gradiesntClass } = Astro.props;
 ---
 
 <article
-  class={`shrink-0 w-[85%] md:w-96 rounded-[40px] p-8 flex flex-col justify-between  relative overflow-hidden ${gradientClass}`}
+  class={`shrink-0 w-[85%] md:w-96 rounded-[40px] p-8 flex flex-col justify-between  relative overflow-hidden ${gradiesntClass}`}
 >
   <div class="space-y-4">
     <h3 class="text-3xl font-bold text-white">{title}</h3>

@@ -6,6 +6,8 @@ import { FAQForm } from './FAQForm';
 import { ServicesCarousel } from '../components/ServicesCarousel';
 import IntegrationIcon from '../components/IntegrationIcon.astro';
 import Footer from './Footer.astro';
+import botimage from '@assets/mask/mask-tech.webp';
+import { Image } from 'astro:assets';
 ---
 
 <Hero />
@@ -43,10 +45,11 @@ import Footer from './Footer.astro';
     </div>
 
     <div class="w-80 max-[1076px]:w-56 my-4">
-      <img
-        src="src/assets/mask/mask-tech.webp"
-        alt="Tecnología de Kairos AI"
+      <Image
         class="w-full drop-shadow-[0_0_50px_rgba(59,130,246,0.3)]"
+        format="webp"
+        src={botimage}
+        alt="Imagen bot"
       />
     </div>
   </section>
@@ -70,22 +73,19 @@ import Footer from './Footer.astro';
       <ServiceCard
         title="Automatizaciones impulsadas con IA"
         description="Implementamos sistemas inteligentes que automatizan tus tareas repetitivas, optimizan tus recursos y multiplican la productividad de tu empresa."
-        image="/src/assets/general/Gear.png"
-        gradientClass="bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#172554]"
+        gradiesntClass="bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#172554]"
       />
 
       <ServiceCard
         title="Páginas Web"
         description="Diseño y creación de sitios web profesionales de alto impacto que posicionan tu marca, captan nuevos clientes y multiplican tus ventas."
-        image="/src/assets/general/laptop.png"
-        gradientClass="bg-gradient-to-b from-[#0C0C0C] to-[#4D4D4D] border border-white/10"
+        gradiesntClass="bg-gradient-to-b from-[#0C0C0C] to-[#4D4D4D] border border-white/10"
       />
 
       <ServiceCard
         title="Desarrollo Móvil"
         description="Soluciones móviles innovadoras diseñadas para optimizar tus procesos internos o brindar un servicio excepcional desde la palma del cliente."
-        image="/src/assets/general/Phone.png"
-        gradientClass="bg-gradient-to-br from-[#4C24A1] via-[#9135D2] to-[#35144C]"
+        gradiesntClass="bg-gradient-to-br from-[#4C24A1] via-[#9135D2] to-[#35144C]"
       />
     </ServicesCarousel>
   </section>
@@ -102,40 +102,40 @@ import Footer from './Footer.astro';
         class="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
         <img
-          src="src/assets/background/ellipse-linear-bluepink.svg"
+          src="/assets/bg/ellipse-linear-bluepink.svg"
           class="absolute w-[120%] h-[120%] opacity-90 blur-3xl"
           alt=""
         />
 
         <img
-          src="src/assets/background/Frame 22.webp"
+          src="/assets/bg/Frame22.webp"
           class="absolute w-full h-full object-contain opacity-20"
           alt=""
         />
       </div>
 
       <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
-        <IntegrationIcon src="src/assets/logos/strapi.svg" alt="Strapi" />
-        <IntegrationIcon src="src/assets/logos/meta-3.svg" alt="Meta" />
+        <IntegrationIcon src="/assets/logos/strapi.svg" alt="Strapi" />
+        <IntegrationIcon src="/assets/logos/meta-3.svg" alt="Meta" />
       </div>
 
       <div class="relative z-10 w-full flex justify-between items-center">
-        <IntegrationIcon src="src/assets/logos/chatwoot.svg" alt="Chatwoot" />
+        <IntegrationIcon src="/assets/logos/chatwoot.svg" alt="Chatwoot" />
 
         <div class="w-24 h-24 md:w-32 md:h-32">
           <img
-            src="src/assets/branding/pulpo-grandient.webp"
+            src="/assets/branding/pulpo-grandient.webp"
             alt="Kairos AI"
             class="w-full h-full object-contain animate-pulse"
           />
         </div>
 
-        <IntegrationIcon src="src/assets/logos/gmail.svg" alt="Gmail" />
+        <IntegrationIcon src="/assets/logos/gmail.svg" alt="Gmail" />
       </div>
 
       <div class="relative z-10 w-[65%] md:w-[55%] flex justify-between">
-        <IntegrationIcon src="src/assets/logos/supabase.svg" alt="Supabase" />
-        <IntegrationIcon src="src/assets/logos/google-meet.svg" alt="Meet" />
+        <IntegrationIcon src="/assets/logos/supabase.svg" alt="Supabase" />
+        <IntegrationIcon src="/assets/logos/google-meet.svg" alt="Meet" />
       </div>
     </div>
   </section>

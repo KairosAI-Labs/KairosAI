@@ -7,11 +7,18 @@ import tailwindcss from '@tailwindcss/vite';
 
 import icon from 'astro-icon';
 
+import node from '@astrojs/node';
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [react(), icon()],
+  output: 'server',
 
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: node({
+    mode: 'standalone',
+  }),
 });

@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { IconCode, IconUser, IconSparkles2  } from '@tabler/icons-react';
+import { IconCode  } from '@tabler/icons-react';
 import { type FAQType } from '../constants/FAQ';
 
 interface AccordionListProps {
