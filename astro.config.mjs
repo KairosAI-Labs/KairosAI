@@ -18,6 +18,11 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
+  server: {
+    port: 3002,
+    host: true,
+  },
+
   adapter: node({
     mode: 'standalone',
   }),
