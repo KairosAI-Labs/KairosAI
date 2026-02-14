@@ -16,9 +16,9 @@ interface AccordionListProps {
 
 export const AccordionList = ({FAQData}:AccordionListProps) => {
   return (
-      <Accordion type="single" className='mt-5 max-w-[500px] overflow-y-auto overflow-hidden max-h-[300px] no-scrollbar' collapsible>
-         {FAQData.map(itemfaq => (
-          <AccordionItem value={itemfaq.answer} className='border-none'>
+      <Accordion type="single" className='mt-5 max-w-[500px] overflow-y-auto overflow-hidden max-h-[300px] py-6 no-scrollbar' collapsible>
+         {FAQData.map((itemfaq, id) => (
+          <AccordionItem value={itemfaq.answer} key={id} className='border-none'>
             <AccordionTrigger className='flex items-center'>
               <i className='bg-white/15 p-1 rounded-full'>
                 <IconCode className='' stroke={2} />

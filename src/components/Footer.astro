@@ -1,0 +1,35 @@
+---
+import { Icon } from 'astro-icon/components';
+import { ButtonGlass } from './ui/ButtonGlass';
+---
+
+<footer class="max-w-7xl mx-auto flex flex-col gap-5 py-8">
+  <div class="w-3/6 h-[0.2px] bg-white/20 block my-10 mx-auto"></div>
+
+  <section class="flex flex-col gap-10 justify-center items-center">
+    <div class="max-w-[700px] max-md:max-w-[90%] space-y-6">
+      <h2 class="text-3xl text-center">
+        Kaiors AI - El momento oportuno es ahora.
+      </h2>
+      <p class="text-center text-white/80">
+        Anticipa el futuro de tu industria integrando soluciones inteligentes
+        que transforman datos en decisiones estratégicas para tu crecimiento.
+      </p>
+    </div>
+    <ButtonGlass
+      client:visible
+      onClick={() => alert('hola')}
+      variant="textIcon"
+    >
+      Agendar Cita
+      <i><Icon width={20} height={20} name="calendar" slot="icon" /></i>
+    </ButtonGlass>
+  </section>
+  <sesction class="flex justify-center">
+    <img
+      class="w-[300px]"
+      src="src/assets/branding/kariosai-logo.webp"
+      alt=""
+    />
+  </sesction>
+</footer>

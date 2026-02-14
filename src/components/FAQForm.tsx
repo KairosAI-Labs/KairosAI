@@ -68,7 +68,7 @@ export const FAQForm = () => {
 
       <form role="search">
         <div
-          className="flex items-center gap-5 ring-1 ring-gray-500/50 rounded-[20px] py-2 px-4 w-[500px]"
+          className="flex items-center gap-5 ring-1 ring-gray-500/50 rounded-[20px] py-2 px-4 w-[500px] max-[578px]:w-[90%] mx-auto"
         >
           <ButtonGlass type="button" variant="icon">
             <IconSearch stroke={2} className='text-white/75'  />
