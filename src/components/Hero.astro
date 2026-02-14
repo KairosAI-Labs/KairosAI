@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { ButtonGlass } from './ui/ButtonGlass';
-import { Icon } from 'astro-icon/components';
+import { ScheduleMeeting } from './ScheduleMeeting';
 ---
 
 <section
@@ -22,13 +21,6 @@ import { Icon } from 'astro-icon/components';
       Aprovechamos la mejor tecnología del mundo moderno para crear soluciones
       de software que optimizan tus recursos cuando más importa.
     </p>
-    <ButtonGlass
-      client:visible
-      onClick={() => alert('hola')}
-      variant="textIcon"
-    >
-      Agendar Cita
-      <i><Icon width={20} height={20} name="calendar" slot="icon" /></i>
-    </ButtonGlass>
+    <ScheduleMeeting client:visible />
   </div>
 </section>

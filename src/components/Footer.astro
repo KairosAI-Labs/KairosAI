@@ -1,7 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
-import { ButtonGlass } from './ui/ButtonGlass';
-import { Image } from 'astro:assets';
+import { ScheduleMeeting } from './ScheduleMeeting';
 ---
 
 <footer class="max-w-7xl mx-auto flex flex-col gap-5 py-8">
@@ -17,14 +15,7 @@ import { Image } from 'astro:assets';
         que transforman datos en decisiones estratégicas para tu crecimiento.
       </p>
     </div>
-    <ButtonGlass
-      client:visible
-      onClick={() => alert('hola')}
-      variant="textIcon"
-    >
-      Agendar Cita
-      <i><Icon width={20} height={20} name="calendar" slot="icon" /></i>
-    </ButtonGlass>
+    <ScheduleMeeting client:visible />
   </section>
   <sesction class="flex justify-center">
     <img
