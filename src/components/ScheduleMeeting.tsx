@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect } from "react";
-import { CalendarIcon, CheckCircle2, Loader2, Mail } from "lucide-react";
+import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent  } from "react";
+import { CalendarIcon, CheckCircle2, Loader2, Mail, User,MessageCircleMore,CalendarClock   } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
@@ -19,8 +19,14 @@ import { ButtonGlass } from "@/components/ui/ButtonGlass";
 import { MOCK_AVAILABILITY, type AvailabilityData } from "@/constants/TimeMeeting";
 import { formatDate, getBrowserLocale } from "@/lib/utils";
 import { isSameDay } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import * as z from "zod";
+import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
 
-
+const WEBHOOK_DISPONIBILIDAD_URL = ""
+const TOKEN = ""
 // ---------------------------------------------------------------------------
 // Componente principal
 // ---------------------------------------------------------------------------
@@ -28,11 +34,25 @@ export function ScheduleMeeting() {
   const [isOpen, setIsOpen] = useState(false);
   const [availability, setAvailability] = useState<AvailabilityData>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [selectedTime, setSelectedTime] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  
+  const [inputData, setInputData] = useState<inputUserData>({
+    name: "",
+    email: "",
+    time: "",
+    summary: ""
+  });
+
+  const [selectedTime, setSelectedTime] = useState<string>("");
+
+
+
+  const handleChangeInput = ({name, value}:{name:string, value:string}) => {
+    setInputData({...inputData, [name]:value })
+  }
+
 
   const locale = useMemo(() => getBrowserLocale(), []);
 
@@ -49,39 +69,52 @@ export function ScheduleMeeting() {
   }, [selectedDate]);
 
   async function fetchAvailability() {
-    setLoading(true);
-    try {
-      // TODO: Reemplazar con llamada real al webhook de Google Calendar
-      // Estructura esperada del webhook:
-      // [{ date: "2026-02-16", slots: ["09:00", "10:00"] }, ...]
-      // const res = await fetch(WEBHOOK_URL);
-      // const raw = await res.json();
-      // const data = raw.map((item: { date: string; slots: string[] }) => ({
-      //   date: new Date(item.date),
-      //   slots: item.slots,
-      // }));
-      // setAvailability(data);
+   setLoading(true);
+   try {
+     const res = await fetch(WEBHOOK_DISPONIBILIDAD_URL, {
+       headers: { Authorization: `Bearer ${TOKEN}` },
+     });
+     const raw = await res.json();
 
-      // Simulación de latencia de red con datos de prueba
-      await new Promise((r) => setTimeout(r, 600));
-      setAvailability(MOCK_AVAILABILITY);
-    } finally {
-      setLoading(false);
-    }
-  }
+     // Mapear del formato del webhook al formato del componente
+     const data = raw.disponibilidad.map(
+       (item: { fecha: string; horarios: { hora: string }[] }) => ({
+         date: new Date(item.fecha + "T12:00:00"), // ← T12:00 evita problemas de zona horaria al crear la Date
+         slots: item.horarios.map((h) => h.hora),
+       }),
+     );
 
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+     setAvailability(data);
+   } finally {
+     setLoading(false);
+   }
+ }
 
-  async function handleConfirm() {
+
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputData.email);
+
+  async function handleConfirm(e:FormEvent) {
+    
+    e.preventDefault()
+    console.log(inputData,selectedDate);
     if (!selectedDate || !selectedTime || !isEmailValid) return;
+    
     setSubmitting(true);
     try {
+
+      const fecha = [
+        selectedDate.getFullYear(),
+        String(selectedDate.getMonth() + 1).padStart(2, "0"),
+        String(selectedDate.getDate()).padStart(2, "0")
+      ].join("-")
+
+
       // TODO: POST al webhook de confirmación
       // await fetch(WEBHOOK_CONFIRM_URL, {
       //   method: "POST",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify({
-      //     date: selectedDate.toISOString().split("T")[0],
+      //     date: ,
       //     time: selectedTime,
       //     email,
       //   }),
@@ -102,7 +135,10 @@ export function ScheduleMeeting() {
       setTimeout(() => {
         setSelectedDate(undefined);
         setSelectedTime("");
-        setEmail("");
+        setInputData({
+          ...inputData,
+          email: ""
+        });
         setConfirmed(false);
       }, 300);
     }
@@ -145,16 +181,18 @@ export function ScheduleMeeting() {
           p-6 sm:p-8
         "
       >
-        {!confirmed && <>
-          <DialogHeader>
-            <DialogTitle className="text-xl font-medium text-white">
-              Agenda tu reunión
-            </DialogTitle>
-            <DialogDescription className="text-white/60 text-sm">
-              Selecciona una fecha y hora disponibles para tu cita.
-            </DialogDescription>
-          </DialogHeader>
-        </>}
+        {!confirmed && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-medium text-white">
+                Agenda tu reunión
+              </DialogTitle>
+              <DialogDescription className="text-white/60 text-sm">
+                Selecciona una fecha y hora disponibles para tu cita.
+              </DialogDescription>
+            </DialogHeader>
+          </>
+        )}
 
         {/* Estado: cargando disponibilidad */}
         {loading && (
@@ -176,9 +214,7 @@ export function ScheduleMeeting() {
               className="text-[#8656ec]"
               aria-hidden="true"
             />
-            <h3 className="text-lg font-medium text-white">
-              ¡Reunión creada!
-            </h3>
+            <h3 className="text-lg font-medium text-white">¡Reunión creada!</h3>
             <p className="text-white/60 text-sm max-w-xs">
               Tu cita ha sido creada para el{" "}
               <span className="text-white font-medium">
@@ -188,7 +224,8 @@ export function ScheduleMeeting() {
               <span className="text-white font-medium">{selectedTime}</span>.
               <br />
               <br />
-              Favor de revisar tu correo electrónico para confirmar la reunión y asegurar tu lugar.
+              Favor de revisar tu correo electrónico para confirmar la reunión y
+              asegurar tu lugar.
             </p>
             <ButtonGlass
               variant="textIcon"
@@ -225,98 +262,176 @@ export function ScheduleMeeting() {
                 />
               </div>
             </div>
+            <form onSubmit={handleConfirm} className="space-y-[20px]">
 
-            {/* Selector de hora */}
-            {selectedDate && (
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="time-select"
-                  className="text-sm text-white/70 font-medium"
-                >
-                  Hora disponible para{" "}
-                  <span className="text-white">
-                    {selectedDate.toLocaleDateString(navigator.language, {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                    })}
-                  </span>
-                </label>
-                <Select value={selectedTime} onValueChange={setSelectedTime}>
-                  <SelectTrigger
-                    id="time-select"
-                    className="bg-white/5 w-full border-white/10 text-white focus:ring-primary/50 rounded-xl h-11"
-                    aria-label="Seleccionar hora"
+              {/* Selector de hora */}
+              {selectedDate && (
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="time-select"
+                    className="text-sm text-white/70 font-medium flex items-center gap-1.5"
                   >
-                    <SelectValue placeholder="Selecciona una hora" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-white/10 text-white">
-                    {slotsForSelectedDate.map((slot) => (
-                      <SelectItem
-                        key={slot}
-                        value={slot}
-                        className="focus:bg-white/10 focus:text-white cursor-pointer"
-                      >
-                        {slot}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+                    <CalendarClock size={14} aria-hidden="true"/>
+                    Hora disponible para{" "}
+                    <span className="text-white">
+                      {selectedDate.toLocaleDateString(navigator.language, {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                      })}
+                    </span>
+                  </label>
+                  <Select
+                    value={inputData.time}
+                    onValueChange={(e) =>
+                      handleChangeInput({
+                        name: "time",
+                        value: e,
+                      })
+                    }
+                  >
+                    <SelectTrigger
+                      id="time-select"
+                      className="bg-white/5 w-full border-white/10 text-white focus:ring-primary/50 rounded-xl h-11"
+                      aria-label="Seleccionar hora"
+                    >
+                      <SelectValue placeholder="Selecciona una hora" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-neutral-900 border-white/10 text-white">
+                      {slotsForSelectedDate.map((slot) => (
+                        <SelectItem
+                          key={slot}
+                          value={slot}
+                          className="focus:bg-white/10 focus:text-white cursor-pointer"
+                        >
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
-            {/* Input correo */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email-input"
-                className="text-sm text-white/70 font-medium flex items-center gap-1.5"
-              >
-                <Mail size={14} aria-hidden="true" />
-                Correo electrónico
-              </label>
-              <div className="relative">
-                <input
-                  id="email-input"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@correo.com"
-                  autoComplete="email"
-                  className="
-                    w-full h-11 rounded-xl px-4
-                    bg-white/5 border border-white/10
-                    text-white text-sm placeholder:text-white/30
-                    outline-none focus:border-[#8656ec]/60 focus:ring-1 focus:ring-[#8656ec]/40
-                    transition-colors duration-200
+              {/* Input correo */}
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="email-input"
+                  className="text-sm text-white/70 font-medium flex items-center gap-1.5"
+                >
+                  <Mail size={14} aria-hidden="true" />
+                  Correo electrónico
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="email-input"
+                    type="email"
+                    value={inputData.email}
+                    onChange={(e) =>
+                      handleChangeInput({
+                        name: "email",
+                        value: e.target.value,
+                      })
+                    }
+                    placeholder="tu@correo.com"
+                    autoComplete="email"
+                    className="
+                      w-full h-11 rounded-xl px-4
+                      bg-white/5 border border-white/10
+                      text-white text-sm placeholder:text-white/30
+                      outline-none focus:border-[#8656ec]/60 focus:ring-1 focus:ring-[#8656ec]/40
+                      transition-colors duration-200
+                    "
+                  />
+                </div>
+              </div>
+
+              {/* Input nombre */}
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="name-input"
+                  className="text-sm text-white/70 font-medium flex items-center gap-1.5"
+                >
+                  <User size={14} aria-hidden="true"/>
+                  Nombre
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="name-input"
+                    type="text"
+                    value={inputData.name}
+                    onChange={(e) =>
+                      handleChangeInput({ name: "name", value: e.target.value })
+                    }
+                    placeholder=" Tu Nombre"
+                    autoComplete="name"
+                    className="
+                      w-full h-11 rounded-xl px-4
+                      bg-white/5 border border-white/10
+                      text-white text-sm placeholder:text-white/30
+                      outline-none focus:border-[#8656ec]/60 focus:ring-1 focus:ring-[#8656ec]/40
+                      transition-colors duration-200
+                    "
+                  />
+                </div>
+              </div>
+
+              {/* Input asunto */}
+              <div className="flex flex-col gap-2">
+                <Label
+                  htmlFor="summary-input"
+                  className="text-sm text-white/70 font-medium flex items-center gap-1.5"
+                >
+                  <MessageCircleMore size={14} aria-hidden="true"/>
+                  Asunto
+                </Label>
+                <Textarea 
+                
+                id="summary-input"
+                name="summary"
+                placeholder=""
+                value={inputData.summary}
+                onChange={(e) => 
+                  handleChangeInput({name: "summary", value: e.target.value})}
+                className="
+                  min-h-[100px] rounded-xl px-4
+                bg-white/5 border border-white/10
+                text-white text-sm placeholder:text-white/30
+                  outline-none focus:border-[#8656ec]/60 focus:ring-1 focus:ring-[#8656ec]/40
+                  transition-colors duration-200 resize-none 
                   "
                 />
+                
               </div>
-            </div>
 
-            {/* Botón confirmar */}
-            <ButtonGlass
-              variant="textIcon"
-              disabled={!selectedDate || !selectedTime || !isEmailValid || submitting}
-              onClick={handleConfirm}
-              aria-disabled={!selectedDate || !selectedTime || !isEmailValid || submitting}
-              className="w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {submitting ? (
-                <>
-                  <Loader2
-                    className="animate-spin"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  Confirmando…
-                </>
-              ) : (
-                <>
-                  <CalendarIcon size={16} aria-hidden="true" />
-                  Confirmar cita
-                </>
-              )}
-            </ButtonGlass>
+              {/* Botón confirmar */}
+
+              <ButtonGlass
+                variant="textIcon"
+                disabled={
+                  !selectedDate || !inputData.name || !inputData.email || !inputData.summary || submitting
+                }
+                aria-disabled={
+                  !selectedDate  || !inputData.name || !inputData.email || !inputData.summary || submitting
+                }
+                className="w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2
+                      className="animate-spin"
+                      size={16}
+                      aria-hidden="true"
+                    />
+                    Confirmando…
+                  </>
+                ) : (
+                  <>
+                    <CalendarIcon size={16} aria-hidden="true" />
+                    Confirmar cita
+                  </>
+                )}
+              </ButtonGlass>
+            </form>
           </div>
         )}
       </DialogContent>
