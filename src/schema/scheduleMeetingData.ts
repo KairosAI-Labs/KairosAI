@@ -1,4 +1,6 @@
-export  const inputUserSchema = z.object({
+import { z } from "zod";
+
+export const inputUserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   time: z.string().min(1),
