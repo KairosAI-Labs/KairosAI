@@ -36,7 +36,7 @@ export function ScheduleMeeting() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
+  const [confirmed, setConfirmed] = useState(false); const [errors, setErrors] = useState<Partial<Record<keyof inputUserData, string>>>({});
   
   const [inputData, setInputData] = useState<inputUserData>({
     name: "",
@@ -49,8 +49,11 @@ export function ScheduleMeeting() {
 
 
 
-  const handleChangeInput = ({name, value}:{name:string, value:string}) => {
-    setInputData({...inputData, [name]:value })
+ const handleChangeInput = ({name, value}:{name:string, value:string}) => {
+ setInputData({...inputData, [name]:value });
+ if (errors[name as keyof inputUserData]) {
+ setErrors({ ...errors, [name]: undefined });
+ }
   }
 
 
@@ -91,15 +94,24 @@ export function ScheduleMeeting() {
  }
 
 
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputData.email);
 
-  async function handleConfirm(e:FormEvent) {
-    
-    e.preventDefault()
-    console.log(inputData,selectedDate);
-    if (!selectedDate || !selectedTime || !isEmailValid) return;
-    
-    setSubmitting(true);
+ async function handleConfirm(e:FormEvent) {
+ e.preventDefault();
+ setErrors({});
+ if (!selectedDate || !selectedTime) return;
+ 
+ const result = inputUserSchema.safeParse(inputData);
+ if (!result.success) {
+ const fieldErrors: Partial<Record<keyof inputUserData, string>> = {};
+ result.error.errors.forEach((err) => {
+ const path = err.path[0] as keyof inputUserData;
+ fieldErrors[path] = err.message;
+ });
+ setErrors(fieldErrors);
+ return;
+ }
+ 
+ setSubmitting(true);
     try {
 
       const fecha = [
