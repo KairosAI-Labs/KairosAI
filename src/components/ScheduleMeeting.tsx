@@ -22,7 +22,6 @@ import { isSameDay } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import * as z from "zod";
 import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
 
 const WEBHOOK_DISPONIBILIDAD_URL = ""
@@ -45,10 +44,6 @@ export function ScheduleMeeting() {
     summary: ""
   });
 
-  const [selectedTime, setSelectedTime] = useState<string>("");
-
-
-
   const handleChangeInput = ({name, value}:{name:string, value:string}) => {
     setInputData({...inputData, [name]:value })
   }
@@ -65,8 +60,8 @@ export function ScheduleMeeting() {
 
   // Resetear selección de hora cuando cambia la fecha
   useEffect(() => {
-    setSelectedTime("");
-  }, [selectedDate]);
+    setInputData({...inputData, time: ""})
+  }, [inputData.time]);
 
   async function fetchAvailability() {
    setLoading(true);
@@ -96,8 +91,8 @@ export function ScheduleMeeting() {
   async function handleConfirm(e:FormEvent) {
     
     e.preventDefault()
-    console.log(inputData,selectedDate);
-    if (!selectedDate || !selectedTime || !isEmailValid) return;
+    
+    if (!selectedDate || !inputData.time || !isEmailValid) return;
     
     setSubmitting(true);
     try {
@@ -134,7 +129,6 @@ export function ScheduleMeeting() {
       // Resetear estado al cerrar
       setTimeout(() => {
         setSelectedDate(undefined);
-        setSelectedTime("");
         setInputData({
           ...inputData,
           email: ""
@@ -221,7 +215,7 @@ export function ScheduleMeeting() {
                 {selectedDate ? formatDate(selectedDate) : ""}
               </span>{" "}
               a las{" "}
-              <span className="text-white font-medium">{selectedTime}</span>.
+              <span className="text-white font-medium">{inputData.time}</span>.
               <br />
               <br />
               Favor de revisar tu correo electrónico para confirmar la reunión y
@@ -257,7 +251,7 @@ export function ScheduleMeeting() {
                   }}
                   onMonthChange={() => {
                     setSelectedDate(undefined);
-                    setSelectedTime("");
+                    setInputData({...inputData, time: ""})
                   }}
                 />
               </div>
