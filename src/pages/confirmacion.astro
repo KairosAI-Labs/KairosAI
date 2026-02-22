@@ -26,7 +26,6 @@ if (token) {
     await jose.jwtVerify(token, secret);
 
     const webhookUrl = `${N8N_WEBHOOK_URL_BASE}/verificarAgendamiento?token=${encodeURIComponent(token)}`;
-    console.log(webhookUrl);
 
     const response = await fetch(webhookUrl, {
       method: 'GET',
@@ -34,8 +33,6 @@ if (token) {
         Authorization: `Bearer ${N8N_WEBHOOK_TOKEN}`,
       },
     });
-
-    console.log(response, token);
 
     if (response.ok) {
       estado = 'ok';
