@@ -8,7 +8,7 @@ export const server = {
   getAvailability: defineAction({
     handler: async () => {
       try {
-        const res = await fetch(url, {
+        const res = await fetch(`${url}/agendamiento`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -50,7 +50,7 @@ export const server = {
     }),
     handler: async (input) => {
       try {
-        const res = await fetch(url, {
+        const res = await fetch(`${url}/agendamiento`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
