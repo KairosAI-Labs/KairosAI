@@ -1,2 +1,2 @@
 
-export const { N8N_WEBHOOK_TOKEN, N8N_WEBHOOK_URL_BASE } = import.meta.env
+export const { N8N_WEBHOOK_TOKEN, N8N_WEBHOOK_URL_BASE, N8N_SECRET_TOKEN } = import.meta.env

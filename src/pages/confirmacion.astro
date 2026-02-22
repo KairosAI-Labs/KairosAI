@@ -1,0 +1,94 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import * as jose from 'jose';
+import {
+  N8N_WEBHOOK_URL_BASE,
+  N8N_WEBHOOK_TOKEN,
+  N8N_SECRET_TOKEN,
+} from '@/constants/env';
+
+type Estado = 'ok' | 'token_invalido' | 'token_expirado' | 'webhook_error';
+
+let estado: Estado = 'token_invalido';
+
+const token = Astro.url.searchParams.get('token');
+if (token) {
+  try {
+    const secret = new TextEncoder().encode(N8N_SECRET_TOKEN);
+    await jose.jwtVerify(token, secret);
+
+    const webhookUrl = `${N8N_WEBHOOK_URL_BASE}/verificarAgendamiento?token=${encodeURIComponent(token)}`;
+    console.log(webhookUrl);
+
+    const response = await fetch(webhookUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${N8N_WEBHOOK_TOKEN}`,
+      },
+    });
+
+    console.log(response, token);
+
+    if (response.ok) {
+      estado = 'ok';
+    } else {
+      estado = 'webhook_error';
+    }
+  } catch (err) {
+    console.error('[confirmacion] JWT error:', err);
+    if (err instanceof jose.errors.JWTExpired) {
+      estado = 'token_expirado';
+    } else {
+      estado = 'token_invalido';
+    }
+  }
+}
+---
+
+<Layout>
+  <main class="max-w-7xl mx-auto flex flex-col gap-10">
+    <section
+      class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4"
+    >
+      {
+        estado === 'ok' && (
+          <div>
+            <h1 class="text-2xl font-bold text-green-600">
+              ¡Reunión confirmada!
+            </h1>
+            <p class="mt-2 text-gray-600">
+              Revisa tu correo para ver la confirmación y los datos de tu
+              reunión.
+            </p>
+          </div>
+        )
+      }
+
+      {
+        estado === 'token_expirado' && (
+          <div>
+            <h1 class="text-2xl font-bold text-yellow-600">
+              El enlace ha caducado
+            </h1>
+            <p class="mt-2 text-gray-600">
+              Este enlace de confirmación ya no es válido. Por favor solicita
+              uno nuevo.
+            </p>
+          </div>
+        )
+      }
+
+      {
+        (estado === 'token_invalido' || estado === 'webhook_error') && (
+          <div>
+            <h1 class="text-2xl font-bold text-red-600">Enlace inválido</h1>
+            <p class="mt-2 text-gray-600">
+              El enlace de confirmación no es válido o ocurrió un error. Por
+              favor intenta de nuevo.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </main>
+</Layout>
