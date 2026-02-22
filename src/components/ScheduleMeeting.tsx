@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent  } from "react";
-import { CalendarIcon, CheckCircle2, Loader2, Mail, User,MessageCircleMore,CalendarClock   } from "lucide-react";
+import { CalendarIcon, CheckCircle2, Loader2, Mail, User,MessageCircleMore,CalendarClock, CircleX   } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
@@ -36,6 +36,10 @@ export function ScheduleMeeting() {
   const [availability, setAvailability] = useState<AvailabilityData>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({
+    message: "",
+    error: false
+  });
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   
@@ -48,15 +52,10 @@ export function ScheduleMeeting() {
 
   const validation = inputUserSchema.safeParse(inputData);
   const isFormValid = validation.success && selectedDate;
-  
-  const [selectedTime, setSelectedTime] = useState<string>("");
-
-
 
   const handleChangeInput = ({name, value}:{name:string, value:string}) => {
     setInputData({...inputData, [name]:value })
   }
-
 
   const locale = useMemo(() => getBrowserLocale(), []);
 
@@ -69,7 +68,10 @@ export function ScheduleMeeting() {
 
   // Resetear selección de hora cuando cambia la fecha
   useEffect(() => {
-    setSelectedTime("");
+    setInputData({
+      ...inputData,
+      time: ""
+    });
   }, [selectedDate]);
 
   async function fetchAvailability() {
@@ -84,7 +86,7 @@ export function ScheduleMeeting() {
         return;
       }
 
-      console.log(data)
+      
       if (data) {
         setAvailability(data);
       }
@@ -104,8 +106,8 @@ export function ScheduleMeeting() {
   async function handleConfirm(e:FormEvent) {
     
     e.preventDefault()
-    console.log(inputData,selectedDate);
-    if (!isFormValid) return;
+    
+    if (!isFormValid || !selectedDate) return;
     
     setSubmitting(true);
     try {
@@ -116,22 +118,25 @@ export function ScheduleMeeting() {
         String(selectedDate.getDate()).padStart(2, "0")
       ].join("-")
 
-
-      // TODO: POST al webhook de confirmación
-      // await fetch(WEBHOOK_CONFIRM_URL, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     date: ,
-      //     time: selectedTime,
-      //     email,
-      //   }),
-      // });
-
-      // Simulación de envío
-      await new Promise((r) => setTimeout(r, 800));
+      const { data, error } = await actions.saveMeeting({
+        name: inputData.name,
+        email: inputData.email,
+        time: inputData.time,
+        summary: inputData.summary,
+        date: fecha
+      });
+      
+      if (error || data.error) {
+        setError({
+          message: "Tu cita no se ha podido crear",
+          error: true
+        })
+        return;
+      }
       setConfirmed(true);
-    } finally {
+    } catch (error) {
+      console.error("Error inesperado:", error);
+    }finally {
       setSubmitting(false);
     }
   }
@@ -142,7 +147,10 @@ export function ScheduleMeeting() {
       // Resetear estado al cerrar
       setTimeout(() => {
         setSelectedDate(undefined);
-        setSelectedTime("");
+        setInputData({
+          ...inputData,
+          time: ""
+        });
         setInputData({
           ...inputData,
           email: ""
@@ -162,7 +170,7 @@ export function ScheduleMeeting() {
 
   // Función para deshabilitar fechas no disponibles
   function isDateDisabled(date: Date): boolean {
-    console.log("idDateDisable", date)
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
@@ -190,7 +198,7 @@ export function ScheduleMeeting() {
           p-6 sm:p-8
         "
       >
-        {!confirmed && (
+        {!confirmed && !error.error && (
           <>
             <DialogHeader>
               <DialogTitle className="text-xl font-medium text-white">
@@ -214,7 +222,7 @@ export function ScheduleMeeting() {
             <p className="text-white/60 text-sm">Cargando disponibilidad…</p>
           </div>
         )}
-
+{/*                               */}
         {/* Estado: confirmado */}
         {!loading && confirmed && (
           <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
@@ -230,7 +238,7 @@ export function ScheduleMeeting() {
                 {selectedDate ? formatDate(selectedDate) : ""}
               </span>{" "}
               a las{" "}
-              <span className="text-white font-medium">{selectedTime}</span>.
+              <span className="text-white font-medium">{inputData.time}</span>.
               <br />
               <br />
               Favor de revisar tu correo electrónico para confirmar la reunión y
@@ -246,8 +254,31 @@ export function ScheduleMeeting() {
           </div>
         )}
 
+        {/* Estado: error */}
+        {!loading && error.error && (
+          <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
+            <CircleX
+              size={100}
+              className="text-white/50"
+              strokeWidth={1}
+              aria-hidden="true"
+            />
+            <h3 className="text-lg font-medium text-white">¡Error!</h3>
+            <p className="text-white/60 text-sm max-w-xs">
+              {error.message}
+            </p>
+            <ButtonGlass
+              variant="textIcon"
+              onClick={() => handleOpenChange(false)}
+              className="mt-2"
+            >
+              Cerrar
+            </ButtonGlass>
+          </div>
+        )}
+
         {/* Estado: selección de fecha y hora */}
-        {!loading && !confirmed && (
+        {!loading && !confirmed && !error.error && (
           <div className="flex flex-col gap-6 mt-2">
             {/* Calendario */}
             <div className="flex justify-center">
@@ -266,7 +297,10 @@ export function ScheduleMeeting() {
                   }}
                   onMonthChange={() => {
                     setSelectedDate(undefined);
-                    setSelectedTime("");
+                    setInputData({
+                      ...inputData,
+                      time: ""
+                    });
                   }}
                 />
               </div>
