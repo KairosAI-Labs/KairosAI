@@ -22,7 +22,9 @@ import { isSameDay } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import * as z from "zod";
 import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
+import { actions } from "astro:actions";
 
 const WEBHOOK_DISPONIBILIDAD_URL = ""
 const TOKEN = ""
@@ -44,6 +46,13 @@ export function ScheduleMeeting() {
     summary: ""
   });
 
+  const validation = inputUserSchema.safeParse(inputData);
+  const isFormValid = validation.success && selectedDate;
+  
+  const [selectedTime, setSelectedTime] = useState<string>("");
+
+
+
   const handleChangeInput = ({name, value}:{name:string, value:string}) => {
     setInputData({...inputData, [name]:value })
   }
@@ -60,29 +69,33 @@ export function ScheduleMeeting() {
 
   // Resetear selección de hora cuando cambia la fecha
   useEffect(() => {
-    setInputData({...inputData, time: ""})
-  }, [inputData.time]);
+    setSelectedTime("");
+  }, [selectedDate]);
 
   async function fetchAvailability() {
    setLoading(true);
    try {
-     const res = await fetch(WEBHOOK_DISPONIBILIDAD_URL, {
-       headers: { Authorization: `Bearer ${TOKEN}` },
-     });
-     const raw = await res.json();
+      
+      const { data, error } = await actions.getAvailability();
+      
+      //  manejamos los errores controlados
+      if (error) {
+        console.error("Error desde el servidor:", error.message);
+        return;
+      }
 
-     // Mapear del formato del webhook al formato del componente
-     const data = raw.disponibilidad.map(
-       (item: { fecha: string; horarios: { hora: string }[] }) => ({
-         date: new Date(item.fecha + "T12:00:00"), // ← T12:00 evita problemas de zona horaria al crear la Date
-         slots: item.horarios.map((h) => h.hora),
-       }),
-     );
+      console.log(data)
+      if (data) {
+        setAvailability(data);
+      }
 
-     setAvailability(data);
-   } finally {
-     setLoading(false);
-   }
+    } catch (err) {
+      
+      console.error("Error inesperado al cargar disponibilidad:", err);
+    } finally {
+      
+      setLoading(false);
+    }
  }
 
 
@@ -91,8 +104,8 @@ export function ScheduleMeeting() {
   async function handleConfirm(e:FormEvent) {
     
     e.preventDefault()
-    
-    if (!selectedDate || !inputData.time || !isEmailValid) return;
+    console.log(inputData,selectedDate);
+    if (!isFormValid) return;
     
     setSubmitting(true);
     try {
@@ -129,6 +142,7 @@ export function ScheduleMeeting() {
       // Resetear estado al cerrar
       setTimeout(() => {
         setSelectedDate(undefined);
+        setSelectedTime("");
         setInputData({
           ...inputData,
           email: ""
@@ -148,6 +162,7 @@ export function ScheduleMeeting() {
 
   // Función para deshabilitar fechas no disponibles
   function isDateDisabled(date: Date): boolean {
+    console.log("idDateDisable", date)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
@@ -215,7 +230,7 @@ export function ScheduleMeeting() {
                 {selectedDate ? formatDate(selectedDate) : ""}
               </span>{" "}
               a las{" "}
-              <span className="text-white font-medium">{inputData.time}</span>.
+              <span className="text-white font-medium">{selectedTime}</span>.
               <br />
               <br />
               Favor de revisar tu correo electrónico para confirmar la reunión y
@@ -251,13 +266,12 @@ export function ScheduleMeeting() {
                   }}
                   onMonthChange={() => {
                     setSelectedDate(undefined);
-                    setInputData({...inputData, time: ""})
+                    setSelectedTime("");
                   }}
                 />
               </div>
             </div>
             <form onSubmit={handleConfirm} className="space-y-[20px]">
-
               {/* Selector de hora */}
               {selectedDate && (
                 <div className="flex flex-col gap-2">
@@ -265,7 +279,7 @@ export function ScheduleMeeting() {
                     htmlFor="time-select"
                     className="text-sm text-white/70 font-medium flex items-center gap-1.5"
                   >
-                    <CalendarClock size={14} aria-hidden="true"/>
+                    <CalendarClock size={14} aria-hidden="true" />
                     Hora disponible para{" "}
                     <span className="text-white">
                       {selectedDate.toLocaleDateString(navigator.language, {
@@ -345,7 +359,7 @@ export function ScheduleMeeting() {
                   htmlFor="name-input"
                   className="text-sm text-white/70 font-medium flex items-center gap-1.5"
                 >
-                  <User size={14} aria-hidden="true"/>
+                  <User size={14} aria-hidden="true" />
                   Nombre
                 </Label>
                 <div className="relative">
@@ -375,18 +389,21 @@ export function ScheduleMeeting() {
                   htmlFor="summary-input"
                   className="text-sm text-white/70 font-medium flex items-center gap-1.5"
                 >
-                  <MessageCircleMore size={14} aria-hidden="true"/>
+                  <MessageCircleMore size={14} aria-hidden="true" />
                   Asunto
                 </Label>
-                <Textarea 
-                
-                id="summary-input"
-                name="summary"
-                placeholder=""
-                value={inputData.summary}
-                onChange={(e) => 
-                  handleChangeInput({name: "summary", value: e.target.value})}
-                className="
+                <Textarea
+                  id="summary-input"
+                  name="summary"
+                  placeholder=""
+                  value={inputData.summary}
+                  onChange={(e) =>
+                    handleChangeInput({
+                      name: "summary",
+                      value: e.target.value,
+                    })
+                  }
+                  className="
                   min-h-[100px] rounded-xl px-4
                 bg-white/5 border border-white/10
                 text-white text-sm placeholder:text-white/30
@@ -394,7 +411,6 @@ export function ScheduleMeeting() {
                   transition-colors duration-200 resize-none 
                   "
                 />
-                
               </div>
 
               {/* Botón confirmar */}
@@ -402,10 +418,18 @@ export function ScheduleMeeting() {
               <ButtonGlass
                 variant="textIcon"
                 disabled={
-                  !selectedDate || !inputData.name || !inputData.email || !inputData.summary || submitting
+                  !selectedDate ||
+                  !inputData.name ||
+                  !inputData.email ||
+                  !inputData.summary ||
+                  submitting
                 }
                 aria-disabled={
-                  !selectedDate  || !inputData.name || !inputData.email || !inputData.summary || submitting
+                  !selectedDate ||
+                  !inputData.name ||
+                  !inputData.email ||
+                  !inputData.summary ||
+                  submitting
                 }
                 className="w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
               >
