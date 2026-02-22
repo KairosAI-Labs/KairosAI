@@ -100,9 +100,6 @@ export function ScheduleMeeting() {
     }
  }
 
-
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputData.email);
-
   async function handleConfirm(e:FormEvent) {
     
     e.preventDefault()
@@ -145,23 +142,22 @@ export function ScheduleMeeting() {
     setIsOpen(open);
     if (!open) {
       // Resetear estado al cerrar
-      setTimeout(() => {
-        setSelectedDate(undefined);
-        setInputData({
-          ...inputData,
-          time: ""
-        });
-        setInputData({
-          ...inputData,
-          email: ""
-        });
-        setConfirmed(false);
-      }, 300);
+      setSelectedDate(undefined);
+      setInputData({
+        ...inputData,
+        time: "",
+        email: ""
+      });
+      setError({
+        error: false,
+        message: ""
+      })
+      setConfirmed(false);
     }
   }
 
   // Fechas disponibles para el calendario
-  const availableDates = availability.map((e) => e.date);
+  const availableDates = availability.length >= 1 ? availability.map((e) => e.date) : []
 
   // Slots del día seleccionado
   const slotsForSelectedDate = selectedDate
