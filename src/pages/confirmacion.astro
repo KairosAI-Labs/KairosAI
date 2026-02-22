@@ -1,0 +1,226 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import * as jose from 'jose';
+import { Image } from 'astro:assets';
+import {
+  N8N_WEBHOOK_URL_BASE,
+  N8N_WEBHOOK_TOKEN,
+  N8N_SECRET_TOKEN,
+} from '@/constants/env';
+import {
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  ArrowLeft,
+  Mail,
+} from 'lucide-react';
+
+type Estado = 'ok' | 'token_invalido' | 'token_expirado' | 'webhook_error';
+
+let estado: Estado = 'token_invalido';
+
+const token = Astro.url.searchParams.get('token');
+if (token) {
+  try {
+    const secret = new TextEncoder().encode(N8N_SECRET_TOKEN);
+    await jose.jwtVerify(token, secret);
+
+    const webhookUrl = `${N8N_WEBHOOK_URL_BASE}/verificarAgendamiento?token=${encodeURIComponent(token)}`;
+
+    const response = await fetch(webhookUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${N8N_WEBHOOK_TOKEN}`,
+      },
+    });
+
+    if (response.ok) {
+      estado = 'ok';
+    } else {
+      estado = 'webhook_error';
+    }
+  } catch (err) {
+    console.error('[confirmacion] JWT error:', err);
+    if (err instanceof jose.errors.JWTExpired) {
+      estado = 'token_expirado';
+    } else {
+      estado = 'token_invalido';
+    }
+  }
+}
+---
+
+<Layout>
+  <main
+    class="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
+  >
+    {/* Animated Background */}
+
+    {/* Content Card */}
+    <div class="relative z-10 w-full max-w-lg mx-4">
+      {/* Glowing border effect */}
+      <div class="absolute rounded-3xl opacity-50 blur-sm"></div>
+      <div class="absolute rounded-3xl opacity-30"></div>
+
+      <div
+        class="relative bg-black/90 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10"
+      >
+        {/* Logo / Brand */}
+        <picture class="flex justify-center my-5 ml-10">
+          <Image
+            format="webp"
+            width="250"
+            height="250"
+            src="/assets/branding/kariosai-logo.webp"
+            alt="Pulpo Gradiente"
+          />
+        </picture>
+        {/* Estado: OK - Confirmación exitosa */}
+        {
+          estado === 'ok' && (
+            <div class="text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {/* Success Icon with gradient ring */}
+              <div class="relative mx-auto w-24 h-24 mb-8">
+                <div
+                  class="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-emerald-400/10 rounded-full animate-ping"
+                  style="animation-duration: 3s;"
+                />
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-400/5 rounded-full" />
+                <div class="relative w-full h-full rounded-full bg-gradient-to-br from-emerald-500/10 to-emerald-400/5 border border-emerald-500/30 flex items-center justify-center">
+                  <CheckCircle2
+                    className="w-12 h-12 text-emerald-400"
+                    strokeWidth={1.5}
+                  />
+                </div>
+              </div>
+
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                ¡Todo listo!
+              </h1>
+
+              <p class="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-sm mx-auto">
+                Tu reunión ha sido confirmada exitosamente. Hemos enviado los
+                detalles a tu correo.
+              </p>
+
+              {/* Info Box */}
+              <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-8">
+                <div class="flex items-center gap-3 text-white/70">
+                  <Mail className="w-5 h-5 text-primary" />
+                  <span class="text-sm">Revisa tu bandeja de entrada</span>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <a
+                href="/"
+                class="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-medium transition-all duration-300 hover:shadow-[0_0_30px_rgba(134,86,236,0.4)] hover:scale-[1.02]"
+              >
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                Volver al inicio
+              </a>
+            </div>
+          )
+        }
+
+        {/* Estado: Token Expirado */}
+        {
+          estado === 'token_expirado' && (
+            <div class="text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {/* Expired Icon */}
+              <div class="relative mx-auto w-24 h-24 mb-8">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-amber-400/10 rounded-full" />
+                <div class="relative w-full h-full rounded-full bg-gradient-to-br from-amber-500/10 to-amber-400/5 border border-amber-500/30 flex items-center justify-center">
+                  <Clock
+                    className="w-12 h-12 text-amber-400"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                {/* Clock animation */}
+                <div
+                  class="absolute inset-0 border-2 border-amber-500/20 rounded-full animate-ping"
+                  style="animation-duration: 2s;"
+                />
+              </div>
+
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                Enlace expirado
+              </h1>
+
+              <p class="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-sm mx-auto">
+                Este enlace de confirmación ya no es válido. Los enlaces tienen
+                un tiempo límite de seguridad.
+              </p>
+
+              <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8">
+                <p class="text-amber-200/80 text-sm">
+                  Por favor solicita una nueva reunión para recibir un enlace
+                  actualizado.
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              <a
+                href="/"
+                class="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl text-white font-medium transition-all duration-300 hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] hover:scale-[1.02]"
+              >
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                Solicitar nueva reunión
+              </a>
+            </div>
+          )
+        }
+
+        {/* Estado: Error (Token inválido o webhook) */}
+        {
+          (estado === 'token_invalido' || estado === 'webhook_error') && (
+            <div class="text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {/* Error Icon */}
+              <div class="relative mx-auto w-24 h-24 mb-8">
+                <div class="absolute inset-0 bg-gradient-to-br from-rose-500/30 to-rose-400/10 rounded-full" />
+                <div
+                  class="relative w-full h-full rounded-full bg-gradient-to-br from-rose-500/10 to-rose-400/5 border border-rose-500/30 flex items-center justify-center animate-pulse"
+                  style="animation-duration: 2s;"
+                >
+                  <AlertCircle
+                    className="w-12 h-12 text-rose-400"
+                    strokeWidth={1.5}
+                  />
+                </div>
+              </div>
+
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                {estado === 'token_invalido'
+                  ? 'Enlace inválido'
+                  : 'Error de conexión'}
+              </h1>
+
+              <p class="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-sm mx-auto">
+                {estado === 'token_invalido'
+                  ? 'El enlace de confirmación no es válido o ha sido modificado. Intenta nuevamente.'
+                  : 'Ocurrió un error al procesar tu confirmación. Por favor intenta de nuevo más tarde.'}
+              </p>
+
+              <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-8">
+                <p class="text-rose-200/80 text-sm">
+                  {estado === 'token_invalido'
+                    ? 'Asegúrate de usar el enlace completo enviado a tu correo.'
+                    : 'Si el problema persiste, contacta a nuestro equipo de soporte.'}
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              <a
+                href="/"
+                class="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl text-white font-medium transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,63,94,0.4)] hover:scale-[1.02]"
+              >
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                Volver al inicio
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </main>
+</Layout>
