@@ -81,11 +81,15 @@ export function ScheduleMeeting() {
       const { data, error } = await actions.getAvailability();
       
       //  manejamos los errores controlados
-      if (error) {
-        console.error("Error desde el servidor:", error.message);
+      if (error || (data as any)?.success === false) {
+        const errorData = error || (data as any);
+        console.error("Error desde el servidor:", errorData.message);
+        setError({
+          message: errorData.message || "Tu cita no se ha podido crear",
+          error: true
+        });
         return;
       }
-
       
       if (data) {
         setAvailability(data);
@@ -94,6 +98,10 @@ export function ScheduleMeeting() {
     } catch (err) {
       
       console.error("Error inesperado al cargar disponibilidad:", err);
+      setError({
+        message: "Error de conexión. Por favor intenta de nuevo.",
+        error: true
+      });
     } finally {
       
       setLoading(false);
@@ -123,12 +131,16 @@ export function ScheduleMeeting() {
         date: fecha
       });
       
-      if (error || data.error) {
+      // Verificar error del servidor
+      if (error || (data as any)?.success === false) {
+        const errorData = error || (data as any);
         setError({
-          message: "Tu cita no se ha podido crear",
+          message: errorData.message || "Tu cita no se ha podido crear",
           error: true
         })
         return;
+      }
+      setConfirmed(true);
       }
       setConfirmed(true);
     } catch (error) {
