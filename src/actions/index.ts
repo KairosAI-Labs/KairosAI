@@ -27,11 +27,12 @@ export const server = {
         const raw = await res.json();
 
         // Verificar si el servidor devuelve un código de error
-        if (raw.codeMessage) {
+        const errorMessage = getErrorMessage(raw.codeMessage);
+        if (errorMessage) {
           return {
             success: false,
             codeMessage: raw.codeMessage,
-            message: getErrorMessage(raw.codeMessage),
+            message: errorMessage,
           };
         }
 
@@ -98,12 +99,13 @@ export const server = {
         const responseData = await res.json().catch(() => ({}));
         
         // Verificar si el servidor devuelve un código de error
-        if (responseData.codeMessage) {
+        const errorMessage = getErrorMessage(responseData.codeMessage);
+        if (errorMessage) {
           return { 
             success: false, 
             error: true,
             codeMessage: responseData.codeMessage,
-            message: getErrorMessage(responseData.codeMessage) 
+            message: errorMessage 
           };
         }
 

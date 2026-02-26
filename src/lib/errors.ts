@@ -31,10 +31,19 @@ export const ErrorMessages: Record<ErrorCode, string> = {
 
 /**
  * Obtiene el mensaje de error para el cliente según el código
+ * Retorna undefined cuando no hay error (codeMessage es "ok", undefined, o vacío)
  */
-export function getErrorMessage(codeMessage?: string): string {
-  if (codeMessage && Object.values(ErrorCode).includes(codeMessage as ErrorCode)) {
+export function getErrorMessage(codeMessage?: string): string | undefined {
+  // Si no hay código o es "ok", no hay error
+  if (!codeMessage || codeMessage === 'ok' || codeMessage === '') {
+    return undefined;
+  }
+  
+  // Si es un código de error conocido, retornar el mensaje
+  if (Object.values(ErrorCode).includes(codeMessage as ErrorCode)) {
     return ErrorMessages[codeMessage as ErrorCode];
   }
+  
+  // Código no reconocido, retornar genérico
   return ErrorMessages[ErrorCode.ERROR_DESCONOCIDO];
 }
