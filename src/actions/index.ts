@@ -86,7 +86,7 @@ export const server = {
         });
 
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
+          const errorData = await res.json()
           const codeMessage = errorData.codeMessage;
           return { 
             success: false, 
@@ -96,11 +96,11 @@ export const server = {
           };
         }
 
-        const responseData = await res.json().catch(() => ({}));
-        
+        const responseData = await res.json()
+
         // Verificar si el servidor devuelve un código de error
         const errorMessage = getErrorMessage(responseData.codeMessage);
-        if (errorMessage) {
+        if (errorMessage && responseData.ok === false) {
           return { 
             success: false, 
             error: true,
