@@ -14,7 +14,6 @@ import {
   ArrowLeft,
   Mail,
 } from 'lucide-react';
-import { getErrorMessage } from '@/lib/errors';
 
 type Estado = 'ok' | 'token_invalido' | 'token_expirado' | 'webhook_error';
 
@@ -41,7 +40,7 @@ if (token) {
       
       // Verificar si el servidor devuelve un código de error
       if (data.codeMessage) {
-        errorMessage = getErrorMessage(data.codeMessage);
+        errorMessage = data.message || 'Error al procesar la solicitud';
         estado = 'webhook_error';
       } else {
         estado = 'ok';

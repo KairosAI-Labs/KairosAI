@@ -25,7 +25,6 @@ import {Label} from "@/components/ui/label";
 import * as z from "zod";
 import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
 import { actions } from "astro:actions";
-import { getErrorMessage } from "@/lib/errors";
 
 const WEBHOOK_DISPONIBILIDAD_URL = ""
 const TOKEN = ""
@@ -82,20 +81,11 @@ export function ScheduleMeeting() {
       const { data, error } = await actions.getAvailability();
       
       //  manejamos los errores controlados
-      if (error) {
-        console.error("Error desde el servidor:", error.message);
-        const codeMessage = (error as any)?.codeMessage;
+      if (error || (data as any)?.success === false) {
+        const errorData = error || (data as any);
+        console.error("Error desde el servidor:", errorData.message);
         setError({
-          message: getErrorMessage(codeMessage),
-          error: true
-        });
-        return;
-      }
-
-      // Verificar si el servidor devuelve un código de error en los datos
-      if (data && (data as any).codeMessage) {
-        setError({
-          message: getErrorMessage((data as any).codeMessage),
+          message: errorData.message || "Tu cita no se ha podido crear",
           error: true
         });
         return;
@@ -108,6 +98,10 @@ export function ScheduleMeeting() {
     } catch (err) {
       
       console.error("Error inesperado al cargar disponibilidad:", err);
+      setError({
+        message: "Error de conexión. Por favor intenta de nuevo.",
+        error: true
+      });
     } finally {
       
       setLoading(false);
@@ -137,16 +131,16 @@ export function ScheduleMeeting() {
         date: fecha
       });
       
-      // Verificar error del servidor o código de error en la respuesta
-      const errorData = error || (data as any)?.error;
-      const codeMessage = (errorData as any)?.codeMessage || (data as any)?.codeMessage;
-      
-      if (errorData || (data as any)?.codeMessage) {
+      // Verificar error del servidor
+      if (error || (data as any)?.success === false) {
+        const errorData = error || (data as any);
         setError({
-          message: getErrorMessage(codeMessage),
+          message: errorData.message || "Tu cita no se ha podido crear",
           error: true
         })
         return;
+      }
+      setConfirmed(true);
       }
       setConfirmed(true);
     } catch (error) {
