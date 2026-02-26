@@ -25,6 +25,7 @@ import {Label} from "@/components/ui/label";
 import * as z from "zod";
 import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
 import { actions } from "astro:actions";
+import { getErrorMessage } from "@/lib/errors";
 
 const WEBHOOK_DISPONIBILIDAD_URL = ""
 const TOKEN = ""
@@ -83,9 +84,22 @@ export function ScheduleMeeting() {
       //  manejamos los errores controlados
       if (error) {
         console.error("Error desde el servidor:", error.message);
+        const codeMessage = (error as any)?.codeMessage;
+        setError({
+          message: getErrorMessage(codeMessage),
+          error: true
+        });
         return;
       }
 
+      // Verificar si el servidor devuelve un código de error en los datos
+      if (data && (data as any).codeMessage) {
+        setError({
+          message: getErrorMessage((data as any).codeMessage),
+          error: true
+        });
+        return;
+      }
       
       if (data) {
         setAvailability(data);
@@ -123,9 +137,13 @@ export function ScheduleMeeting() {
         date: fecha
       });
       
-      if (error || data.error) {
+      // Verificar error del servidor o código de error en la respuesta
+      const errorData = error || (data as any)?.error;
+      const codeMessage = (errorData as any)?.codeMessage || (data as any)?.codeMessage;
+      
+      if (errorData || (data as any)?.codeMessage) {
         setError({
-          message: "Tu cita no se ha podido crear",
+          message: getErrorMessage(codeMessage),
           error: true
         })
         return;

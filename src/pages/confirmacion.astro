@@ -14,10 +14,12 @@ import {
   ArrowLeft,
   Mail,
 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/errors';
 
 type Estado = 'ok' | 'token_invalido' | 'token_expirado' | 'webhook_error';
 
 let estado: Estado = 'token_invalido';
+let errorMessage: string = '';
 
 const token = Astro.url.searchParams.get('token');
 if (token) {
@@ -35,7 +37,15 @@ if (token) {
     });
 
     if (response.ok) {
-      estado = 'ok';
+      const data = await response.json();
+      
+      // Verificar si el servidor devuelve un código de error
+      if (data.codeMessage) {
+        errorMessage = getErrorMessage(data.codeMessage);
+        estado = 'webhook_error';
+      } else {
+        estado = 'ok';
+      }
     } else {
       estado = 'webhook_error';
     }
