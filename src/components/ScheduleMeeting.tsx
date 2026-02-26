@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent  } from "react";
-import { CalendarIcon, CheckCircle2, Loader2, Mail, User,MessageCircleMore,CalendarClock, CircleX   } from "lucide-react";
+import { CalendarIcon, CheckCircle2, Loader2, Mail, User,MessageCircleMore,CalendarClock, AlertCircle   } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
@@ -24,7 +24,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import * as z from "zod";
 import { inputUserSchema, type inputUserData } from "@/schema/scheduleMeetingData";
-import { actions } from "astro:actions";
+import { ErrorCode, isServerError, getClientErrorMessage, type ServerError } from "@/lib/errors";
 
 const WEBHOOK_DISPONIBILIDAD_URL = ""
 const TOKEN = ""
@@ -36,12 +36,11 @@ export function ScheduleMeeting() {
   const [availability, setAvailability] = useState<AvailabilityData>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({
-    message: "",
-    error: false
-  });
   const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  
+  // Estado para manejo de errores
+  const [error, setError] = useState<ServerError | null>(null);
   
   const [inputData, setInputData] = useState<inputUserData>({
     name: "",
@@ -76,28 +75,57 @@ export function ScheduleMeeting() {
 
   async function fetchAvailability() {
    setLoading(true);
+   setError(null);
    try {
-      
-      const { data, error } = await actions.getAvailability();
-      
-      //  manejamos los errores controlados
-      if (error) {
-        console.error("Error desde el servidor:", error.message);
-        return;
-      }
+     const res = await fetch(WEBHOOK_DISPONIBILIDAD_URL, {
+       headers: { Authorization: `Bearer ${TOKEN}` },
+     });
+     
+     if (!res.ok) {
+       // Error HTTP genérico
+       setError({
+         codeMessage: ErrorCode.ERROR_DESCONOCIDO,
+         message: 'Error al cargar la disponibilidad. Por favor intenta de nuevo.',
+       });
+       return;
+     }
+     
+     const raw = await res.json();
+     
+     // Verificar si el servidor devuelve un error
+     if (isServerError(raw)) {
+       setError(raw);
+       return;
+     }
 
-      
-      if (data) {
-        setAvailability(data);
-      }
+     // Verificar si hay disponibilidad
+     if (!raw.disponibilidad || raw.disponibilidad.length === 0) {
+       setError({
+         codeMessage: ErrorCode.SIN_DISPONIBILIDAD,
+         message: 'No hay horarios disponibles en este momento.',
+       });
+       return;
+     }
 
-    } catch (err) {
-      
-      console.error("Error inesperado al cargar disponibilidad:", err);
-    } finally {
-      
-      setLoading(false);
-    }
+     // Mapear del formato del webhook al formato del componente
+     const data = raw.disponibilidad.map(
+       (item: { fecha: string; horarios: { hora: string }[] }) => ({
+         date: new Date(item.fecha + "T12:00:00"),
+         slots: item.horarios.map((h) => h.hora),
+       }),
+     );
+
+     setAvailability(data);
+   } catch (err) {
+     console.error('[ScheduleMeeting] Error fetching availability:', err);
+     setError({
+       codeMessage: ErrorCode.ERROR_DESCONOCIDO,
+       message: 'Error de conexión. Por favor verifica tu conexión a internet.',
+     });
+   } finally {
+     setLoading(false);
+   }
+ }
  }
 
   async function handleConfirm(e:FormEvent) {
@@ -107,6 +135,7 @@ export function ScheduleMeeting() {
     if (!isFormValid || !selectedDate) return;
     
     setSubmitting(true);
+    setError(null);
     try {
 
       const fecha = [
@@ -115,25 +144,37 @@ export function ScheduleMeeting() {
         String(selectedDate.getDate()).padStart(2, "0")
       ].join("-")
 
-      const { data, error } = await actions.saveMeeting({
-        name: inputData.name,
-        email: inputData.email,
-        time: inputData.time,
-        summary: inputData.summary,
-        date: fecha
-      });
-      
-      if (error || data.error) {
-        setError({
-          message: "Tu cita no se ha podido crear",
-          error: true
-        })
-        return;
-      }
+      // TODO: POST al webhook de confirmación
+      // const res = await fetch(WEBHOOK_CONFIRM_URL, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     date: fecha,
+      //     time: inputData.time,
+      //     email: inputData.email,
+      //     name: inputData.name,
+      //     summary: inputData.summary,
+      //   }),
+      // });
+      // 
+      // const raw = await res.json();
+      // 
+      // // Verificar si el servidor devuelve un error
+      // if (isServerError(raw)) {
+      //   setError(raw);
+      //   return;
+      // }
+
+      // Simulación de envío
+      await new Promise((r) => setTimeout(r, 800));
       setConfirmed(true);
-    } catch (error) {
-      console.error("Error inesperado:", error);
-    }finally {
+    } catch (err) {
+      console.error('[ScheduleMeeting] Error confirming:', err);
+      setError({
+        codeMessage: ErrorCode.ERROR_DESCONOCIDO,
+        message: 'Error al confirmar la reunión. Por favor intenta de nuevo.',
+      });
+    } finally {
       setSubmitting(false);
     }
   }
@@ -142,17 +183,16 @@ export function ScheduleMeeting() {
     setIsOpen(open);
     if (!open) {
       // Resetear estado al cerrar
-      setSelectedDate(undefined);
-      setInputData({
-        ...inputData,
-        time: "",
-        email: ""
-      });
-      setError({
-        error: false,
-        message: ""
-      })
-      setConfirmed(false);
+      setTimeout(() => {
+        setSelectedDate(undefined);
+        setInputData({
+          ...inputData,
+          email: ""
+        });
+        setConfirmed(false);
+        setError(null);
+      }, 300);
+>>>>>>> c484809 (feat(errors): add error handling system with codeMessage support)
     }
   }
 
@@ -204,6 +244,27 @@ export function ScheduleMeeting() {
                 Selecciona una fecha y hora disponibles para tu cita.
               </DialogDescription>
             </DialogHeader>
+            
+            {/* Estado: Error */}
+            {error && (
+              <div 
+                className="flex items-start gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20"
+                role="alert"
+              >
+                <AlertCircle 
+                  className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" 
+                  aria-hidden="true" 
+                />
+                <div className="flex-1">
+                  <p className="text-rose-200 text-sm font-medium">
+                    {error.codeMessage ? error.codeMessage.replace(/_/g, ' ') : 'Error'}
+                  </p>
+                  <p className="text-rose-300/70 text-sm mt-1">
+                    {getClientErrorMessage(error)}
+                  </p>
+                </div>
+              </div>
+            )}
           </>
         )}
 

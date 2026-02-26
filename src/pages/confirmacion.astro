@@ -7,17 +7,13 @@ import {
   N8N_WEBHOOK_TOKEN,
   N8N_SECRET_TOKEN,
 } from '@/constants/env';
-import {
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  ArrowLeft,
-  Mail,
-} from 'lucide-react';
+import { CheckCircle2, AlertCircle, Clock, ArrowLeft, Mail, Sparkles } from 'lucide-react';
+import { ErrorCode, getClientErrorMessage, type ServerError } from '@/lib/errors';
 
 type Estado = 'ok' | 'token_invalido' | 'token_expirado' | 'webhook_error';
 
 let estado: Estado = 'token_invalido';
+let errorMessage: string = '';
 
 const token = Astro.url.searchParams.get('token');
 if (token) {
@@ -35,16 +31,38 @@ if (token) {
     });
 
     if (response.ok) {
-      estado = 'ok';
+      const data = await response.json();
+      
+      // Verificar si el servidor devuelve un código de error
+      if (data.codeMessage) {
+        // Mapear códigos antiguos a nuevos si es necesario
+        switch (data.codeMessage) {
+          case 'TOKEN_NO_VALIDO':
+          case 'TOKEN_INVALIDO':
+            estado = 'token_invalido';
+            break;
+          case 'TOKEN_EXPIRADO':
+            estado = 'token_expirado';
+            break;
+          default:
+            estado = 'webhook_error';
+        }
+        errorMessage = getClientErrorMessage(data as ServerError);
+      } else {
+        estado = 'ok';
+      }
     } else {
       estado = 'webhook_error';
+      errorMessage = 'Error al verificar la reunión. Por favor intenta de nuevo.';
     }
   } catch (err) {
     console.error('[confirmacion] JWT error:', err);
     if (err instanceof jose.errors.JWTExpired) {
       estado = 'token_expirado';
+      errorMessage = getClientErrorMessage({ codeMessage: ErrorCode.TOKEN_NO_VALIDO });
     } else {
       estado = 'token_invalido';
+      errorMessage = getClientErrorMessage({ codeMessage: ErrorCode.TOKEN_NO_VALIDO });
     }
   }
 }
@@ -189,25 +207,23 @@ if (token) {
                 </div>
               </div>
 
-              <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-                {estado === 'token_invalido'
-                  ? 'Enlace inválido'
-                  : 'Error de conexión'}
-              </h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+              {estado === 'token_invalido' ? 'Enlace inválido' : 'Error de conexión'}
+            </h1>
+            
+            <p class="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-sm mx-auto">
+              {errorMessage || (estado === 'token_invalido' 
+                ? 'El enlace de confirmación no es válido o ha sido modificado. Intenta nuevamente.'
+                : 'Ocurrió un error al procesar tu confirmación. Por favor intenta de nuevo más tarde.')}
+            </p>
 
-              <p class="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-sm mx-auto">
+            <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-8">
+              <p class="text-rose-200/80 text-sm">
                 {estado === 'token_invalido'
-                  ? 'El enlace de confirmación no es válido o ha sido modificado. Intenta nuevamente.'
-                  : 'Ocurrió un error al procesar tu confirmación. Por favor intenta de nuevo más tarde.'}
+                  ? 'Asegúrate de usar el enlace completo enviado a tu correo.'
+                  : 'Si el problema persiste, contacta a nuestro equipo de soporte.'}
               </p>
-
-              <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-8">
-                <p class="text-rose-200/80 text-sm">
-                  {estado === 'token_invalido'
-                    ? 'Asegúrate de usar el enlace completo enviado a tu correo.'
-                    : 'Si el problema persiste, contacta a nuestro equipo de soporte.'}
-                </p>
-              </div>
+            </div>
 
               {/* CTA Button */}
               <a
