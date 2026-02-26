@@ -141,8 +141,6 @@ export function ScheduleMeeting() {
         return;
       }
       setConfirmed(true);
-      }
-      setConfirmed(true);
     } catch (error) {
       console.error("Error inesperado:", error);
     }finally {
