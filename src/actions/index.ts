@@ -1,5 +1,6 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'zod';
+import { getErrorMessage } from '@/lib/errors';
 
 const url = import.meta.env.N8N_WEBHOOK_URL_BASE;
 const token = import.meta.env.N8N_WEBHOOK_TOKEN;
@@ -12,10 +13,27 @@ export const server = {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) throw new Error("Fallo en la conexión ");
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          const codeMessage = errorData.codeMessage;
+          return {
+            success: false,
+            codeMessage,
+            message: getErrorMessage(codeMessage),
+          };
+        }
 
         //Extraer datos
         const raw = await res.json();
+
+        // Verificar si el servidor devuelve un código de error
+        if (raw.codeMessage) {
+          return {
+            success: false,
+            codeMessage: raw.codeMessage,
+            message: getErrorMessage(raw.codeMessage),
+          };
+        }
 
         const datos = raw.data || [];
 
@@ -33,7 +51,8 @@ export const server = {
         
         return {
           success: false,
-          message: "Error desconocido",
+          codeMessage: 'ERROR_DESCONOCIDO',
+          message: getErrorMessage('ERROR_DESCONOCIDO'),
         };
 
       }
@@ -66,17 +85,37 @@ export const server = {
         });
 
         if (!res.ok) {
-          const errorText = await res.text();
-          console.error(`Error HTTP ${res.status} desde n8n:`, errorText);
-
-          throw new Error(`Fallo en n8n: ${res.status} - ${errorText}`);
+          const errorData = await res.json().catch(() => ({}));
+          const codeMessage = errorData.codeMessage;
+          return { 
+            success: false, 
+            error: true,
+            codeMessage,
+            message: getErrorMessage(codeMessage) 
+          };
         }
 
+        const responseData = await res.json().catch(() => ({}));
+        
+        // Verificar si el servidor devuelve un código de error
+        if (responseData.codeMessage) {
+          return { 
+            success: false, 
+            error: true,
+            codeMessage: responseData.codeMessage,
+            message: getErrorMessage(responseData.codeMessage) 
+          };
+        }
 
         return { success: true, message: "Cita guardada correctamente" };
       } catch (error) {
         console.error("Error en saveMeeting:", error);
-        return { success: false, error:true, message: "No se pudo guardar la cita" };
+        return { 
+          success: false, 
+          error: true,
+          codeMessage: 'ERROR_DESCONOCIDO',
+          message: getErrorMessage('ERROR_DESCONOCIDO') 
+        };
       }
     }
   })
