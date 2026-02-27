@@ -3,13 +3,48 @@ import '../styles/global.css';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>Kairos AI</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Kairos AI - Automatizaciones con IA y Desarrollo Web</title>
+    <meta name="description" content="Implementamos automatizaciones con IA, desarrollo web y apps móviles. Transformamos procesos empresariales con tecnología de vanguardia." />
+    <meta name="keywords" content="IA, automatización, desarrollo web, apps, marketing digital, inteligencia artificial, software" />
+    <meta name="author" content="Kairos AI" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://kairosai.com/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kairosai.com/" />
+    <meta property="og:title" content="Kairos AI - Automatizaciones con IA y Desarrollo Web" />
+    <meta property="og:description" content="Implementamos automatizaciones con IA, desarrollo web y apps móviles. Transformamos procesos empresariales con tecnología de vanguardia." />
+    <meta property="og:site_name" content="Kairos AI" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kairos AI - Automatizaciones con IA y Desarrollo Web" />
+    <meta name="twitter:description" content="Implementamos automatizaciones con IA, desarrollo web y apps móviles. Transformamos procesos empresariales con tecnología de vanguardia." />
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Kairos AI",
+        "url": "https://kairosai.com",
+        "description": "Implementamos automatizaciones con IA, desarrollo web y apps móviles.",
+        "areaServed": "Latinoamérica",
+        "serviceType": ["Desarrollo Web", "Automatización con IA", "Desarrollo Móvil"],
+        "sameAs": []
+      }
+    </script>
   </head>
   <body>
     <slot />
