@@ -28,7 +28,7 @@ export function CalendarPicker({
   }
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center my-3 sm:my-4">
       <div className="dark rounded-xl border border-white/10 bg-white/5 p-1">
         <Calendar
           mode="single"

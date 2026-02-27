@@ -104,9 +104,13 @@ export function ScheduleMeeting() {
           bg-transparent border border-white/10 backdrop-blur-xl
           text-white shadow-2xl rounded-2xl
           w-[95vw] max-w-md sm:max-w-lg
-          p-6 sm:p-8
+          p-4 sm:p-6 md:p-8
+          max-h-[90vh] sm:max-h-[85vh]
+          overflow-hidden flex flex-col no-scrollbar
         "
       >
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto px-1 -mx-1 no-scrollbar">
         {/* Loading */}
         {loading && <LoadingView />}
 
@@ -123,7 +127,7 @@ export function ScheduleMeeting() {
         {!loading && !confirmed && (
           <>
             <DialogHeader>
-              <DialogTitle className="text-xl font-medium text-white">
+              <DialogTitle className="text-lg sm:text-xl font-medium text-white">
                 Agenda tu reunión
               </DialogTitle>
               <DialogDescription className="text-white/60 text-sm">
@@ -151,7 +155,7 @@ export function ScheduleMeeting() {
               }}
             />
 
-            <form onSubmit={handleSubmit} className="space-y-[20px]">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-[20px]">
               {/* Selector de hora */}
               <TimeSelector
                 selectedDate={selectedDate}
@@ -172,7 +176,7 @@ export function ScheduleMeeting() {
                 variant="textIcon"
                 disabled={!isFormValid || submitting}
                 aria-disabled={!isFormValid || submitting}
-                className="w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed mt-2"
               >
                 {submitting ? (
                   <>
@@ -193,6 +197,7 @@ export function ScheduleMeeting() {
             </form>
           </>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );
