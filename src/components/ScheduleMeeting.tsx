@@ -105,7 +105,7 @@ export function ScheduleMeeting() {
           text-white shadow-2xl rounded-2xl
           w-[95vw] max-w-md sm:max-w-lg
           p-4 sm:p-6 md:p-8
-          max-h-[90vh] sm:max-h-[85vh]
+          max-h-[70vh] sm:max-h-[75vh] md:max-h-[85vh]
           overflow-hidden flex flex-col no-scrollbar
         "
       >
