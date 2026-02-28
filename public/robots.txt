@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kairosai.com/sitemap.xml
