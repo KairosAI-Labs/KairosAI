@@ -1,10 +1,13 @@
----
-import type { HTMLAttributes } from 'astro/types';
+"use client"
+
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
+import React from 'react';
+import { Children } from 'react';
 
 interface Props
-  extends HTMLAttributes<'button'>, VariantProps<typeof buttonGlassVariant> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonGlassVariant> {}
 
 const buttonGlassVariant = cva(
   'glass-effect  px-[10px] py-[10px] rounded-2xl',
@@ -28,10 +31,19 @@ const buttonGlassVariant = cva(
   }
 );
 
-const { variant, size, class: className } = Astro.props;
----
+export const ButtonGlass = ({variant, size, className, children, ...props }:Props) => {
+ 
+  return (
+    <button {...props} className={cn(buttonGlassVariant({ variant, size }), className)}>
+      {Children.map(children, child =>
+        <>
+          {child}
+        </>
+      )}
+    </button>
+  )
+}
 
-<button class={cn(buttonGlassVariant({ variant, size }), className)}>
-  <slot />
-  <slot name="icon" />
-</button>
+
+
+

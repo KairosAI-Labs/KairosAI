@@ -1,0 +1,20 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  gradiesntClass: string;
+}
+
+const { title, description, gradiesntClass } = Astro.props;
+---
+
+<article
+  class={`shrink-0 w-[85%] md:w-96 rounded-[40px] p-8 flex flex-col justify-between  relative overflow-hidden ${gradiesntClass}`}
+>
+  <div class="space-y-4">
+    <h3 class="text-3xl font-bold text-white">{title}</h3>
+    <p class="text-white/80 text-sm leading-relaxed max-w-96">
+      {description}
+    </p>
+  </div>
+</article>
